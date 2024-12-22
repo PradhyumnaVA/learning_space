@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <fcntl.h>
+#include <errno.h>
 
 int main(){
 	int i,j;
@@ -10,12 +12,16 @@ int main(){
 	char usr_input;
 	char buffer[1];
 	pid_t pid;
+	int buf_status;
 
 	// creating pipe
 	if(pipe(pipefd) == -1){
 		perror("pipe not created");
 		exit(EXIT_FAILURE);
 	}
+
+	if(fcntl(pipefd[0], F_SETFL, O_NONBLOCK) < 0)
+		exit(2);
 
 	// creating child 
 	pid = fork();
@@ -55,25 +61,40 @@ int main(){
 	}
 	else {
 	 	//parent process
+		// change the terminal to raw mode, input directly taken, no need to press ENTER
+		system("stty raw -echo");
 
 		// clear the terminal screen
 		printf("\033[2J");
+		close(pipefd[1]); // closing write end of pipe
 		
 		while(1){
-			close(pipefd[1]); // closing write end of pipe
-			
 			// reading from the buffer, read internally clears the buffer
-			read(pipefd[0], buffer, sizeof(buffer)); 
+			buf_status = read(pipefd[0], buffer, sizeof(buffer)); 
 			
-		//	printf("\033[4;1H %ld", sizeof(buffer));
-			
-			// move cursor to starting point of 5th line
-			printf("\033[5;1H");
+			if(buf_status == -1) {
+				if(errno == EAGAIN) {
+					printf("@\n");
+					usleep(500000);
+					// break;
+				}
+				else {
+					perror("read");
+					exit(4);
+				}
+			}
+			else {
+				// printf("\033[4;1H %ld", sizeof(buffer));
+				
+				// move cursor to starting point of 5th line
+				printf("\033[5;1H");
 
-			printf("parent received: %s\n", buffer);
-			fflush(stdout);
-			if(buffer[0] == 'q'){
-				break; // ends the infinite loop
+				printf("parent received: %s\n", buffer);
+				fflush(stdout);
+			
+				if(buffer[0] == 'q'){
+					break; // ends the infinite loop
+				}
 			}
 		}
 		system("stty cooked echo");
