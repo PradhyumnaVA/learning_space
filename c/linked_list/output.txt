@@ -1,0 +1,36 @@
+1
+2
+4
+new data added at head is 0
+0
+1
+2
+4
+new data to append is 5
+0
+1
+2
+4
+5
+new data to be inserted after 2 is 6
+0
+1
+2
+6
+4
+5
+deleting the head
+1
+2
+6
+4
+5
+deleting the tail
+1
+2
+6
+4
+deleting 6 from the list
+1
+2
+4
