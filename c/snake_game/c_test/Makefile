@@ -3,10 +3,10 @@ FILE := non_blocking_pipe.c
 OUTPUT := nb_pipe
 
 main : 	
-	gcc -o ${OUTPUT} ${FILE}  
+	gcc -o ${OUTPUT}.o ${FILE}  
 
 run : 
-	./${OUTPUT}
+	./${OUTPUT}.o
 
 clean : 
-	rm ${OUTPUT}
+	rm *.o
