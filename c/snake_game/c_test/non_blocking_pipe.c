@@ -33,6 +33,9 @@ int main(){
 
 	if(pid == 0){
 		//child process
+
+		printf("\033[2J");
+		
 		// change the terminal to raw mode, input directly taken, no need to press ENTER
 		system("stty raw -echo");
 		while(1){
@@ -63,6 +66,9 @@ int main(){
 	 	//parent process
 		// change the terminal to raw mode, input directly taken, no need to press ENTER
 		system("stty raw -echo");
+		
+		// for position of @
+		int x=0;
 
 		// clear the terminal screen
 		printf("\033[2J");
@@ -74,7 +80,10 @@ int main(){
 			
 			if(buf_status == -1) {
 				if(errno == EAGAIN) {
-					printf("@\n");
+					// printf("\033[2J");
+					printf("\033[10;%dH",x++);
+					printf("@");
+					fflush(stdout);
 					usleep(500000);
 					// break;
 				}
