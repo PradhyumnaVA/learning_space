@@ -1,6 +1,6 @@
 # file names
-FILE := test_mv.c
-OUTPUT := test_mv
+FILE := snake_game.c
+OUTPUT := snake_game
 
 main : 	
 	gcc -o ${OUTPUT}.o ${FILE}  
