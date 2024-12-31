@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <string.h>
 
 // using struct to hold the variables for coordinates of @ and []
 typedef struct {
@@ -15,6 +16,7 @@ typedef struct {
 
 coord *pos(coord*);
 coord *move(coord*, char);
+char* keep_score(char*, int);
 
 ////////////////////////////////////////
 
@@ -89,6 +91,9 @@ int main(){
 		// allocate memory on the heap for the present coordinate struct
 		coord *present_c = (coord*)malloc(sizeof(coord));
 
+		char *score = (char*)malloc(20*sizeof(char)); 
+		int count=0;
+
 		// initial position of @
 		present_c -> x=20;
 		present_c -> y=5;
@@ -118,9 +123,15 @@ int main(){
 						printf("\033[1;1Hsuccess\n");
 						(present_c->x)++;
 						(present_c->y)++;
+						count++;
+						score = keep_score(score,count);			
 						present_c = pos(present_c);
 						continue;
 					}		
+
+					printf("\033[1;1H");
+					printf("%s%d", score, count*10);
+					fflush(stdout);
 
 					present_c = move(present_c, input_dir);
 
@@ -141,6 +152,8 @@ int main(){
 			}
 		}
 		system("stty cooked echo");
+		free(present_c);	
+		free(score);
 		exit(EXIT_SUCCESS);
 	}
 	return 0;
@@ -161,7 +174,15 @@ coord *move(coord *ip_coord, char input_dir){
 	}
 
 	printf("\033[%d;%dH",y,x);
-	printf("@");
+
+	switch(input_dir){
+		case 'w': printf("^"); break;
+		case 's': printf("v"); break;
+		case 'a': printf("<"); break;
+		case 'd': printf(">"); break;
+		default : break;
+	}
+
 	printf("\033[2;1Hx=%d,y=%d",x,y);
 	printf("\033[3:1Hposx=%d,posy=%d", data -> rand_x, data -> rand_y);
 	fflush(stdout);
@@ -190,4 +211,16 @@ coord *pos(coord *input_coord){
 
 	// return the data struct, which contains the new rand coordinates, to the main function	
 	return data;
+}
+
+char* keep_score(char *input, int i){
+	char *foo = (char*)malloc(20*sizeof(char)); 
+	foo = input;
+
+	strcat(foo, "#");
+	printf("\033[1;1H");
+	printf("%s%d", foo, i*10);
+	fflush(stdout);
+
+	return foo;
 }
