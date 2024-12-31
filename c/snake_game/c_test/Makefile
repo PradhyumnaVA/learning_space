@@ -1,6 +1,6 @@
 # file names
-FILE := non_blocking_pipe.c 
-OUTPUT := nb_pipe
+FILE := test_mv.c
+OUTPUT := test_mv
 
 main : 	
 	gcc -o ${OUTPUT}.o ${FILE}  
