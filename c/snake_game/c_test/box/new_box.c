@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 char **create_matrix(int width, int height, int indent){
 	
@@ -36,14 +37,18 @@ int main() {
 	int indent = 5; // Number of spaces for indentation
 		
 	char **box = create_matrix(width,height,indent);
+	char *str = malloc(height*(width+indent+1));
+	char *row = malloc(width+indent+1);
 
 	int i;
 	system("clear");
 	// Print the box
-	printf("\033[3;1H");
 	for (i = 0; i < height; i++) {
-		printf("%s\n", box[i]);
+		sprintf(row, "%s\n", box[i]);
+		strcat(str,row);
 	}
+
+	printf("\033[4;1H%s",str);
 	return 0;
 }
 
