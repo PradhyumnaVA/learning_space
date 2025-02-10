@@ -34,6 +34,22 @@ int main(){
 
 	int i;
 
+	char *mark = malloc(10);
+	mark = "--------";
+
+	char **box = create_matrix(width,height,indent);
+	char *str = malloc(height*(width+indent+1));
+	char *row = malloc(width+indent+1);
+
+	// Print the box
+	for (i = 0; i < height; i++) {
+		sprintf(row, "%s", box[i]);
+		strcat(str,row);
+		strcat(str,"\n");
+	}
+					/* printf("\033[4;1H%s",str); */
+					/* sleep(5); */
+
 	// creating pipe
 	if(pipe(pipefd) == -1){
 		perror("pipe not created");
@@ -77,7 +93,6 @@ int main(){
 
 		        // write 1 byte of data that is entered 	
 			write(pipefd[1], write_byte, 1); 
-
 			
 			if(dir == 'q'){
 				break; // ends the infinite loop
@@ -109,9 +124,6 @@ int main(){
 		// variable to hold intermediate direction
 		char input_dir='d';
 
-		// creating box
-		char **box = create_matrix(width,height,indent);
-
 		// closing write end of pipe
 		close(pipefd[1]); 
 		
@@ -125,11 +137,9 @@ int main(){
 			if(buf_status == -1) {
 				// if buffer is empty then movement of snake head occurs
 				if(errno == EAGAIN) {
+					printf("\033[4;50H%s",mark);
+					/* printf("\033[4;1H%s",str); */
 
-	printf("\033[3;1H");
-	for (i = 0; i < height; i++) {
-		printf("%s\n", box[i]);
-	}
 					printf("\033[%d;%dH", present_c->rand_y, present_c->rand_x);
 					printf("[ ]");
 
