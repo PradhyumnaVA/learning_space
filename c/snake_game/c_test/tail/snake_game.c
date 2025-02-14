@@ -165,10 +165,10 @@ coord *move(coord *ip_coord, char input_dir, int len_tail){
 	int i;
 	
 	// tail configurations
-	char t_down[] = "#\033[A\033[D";
-	char t_right[] = "#\033[2D"; 
-	char t_up[] = "#\033[B\033[D";
-	char t_left[] = "#"; 
+	char t_down[] = "o\033[A\033[D";
+	char t_right[] = "o\033[2D"; 
+	char t_up[] = "o\033[B\033[D";
+	char t_left[] = "o"; 
 
 	// head configurations
 	char h_down[] = "v\033[A\033[D"; 
