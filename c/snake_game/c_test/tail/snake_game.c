@@ -16,7 +16,7 @@ typedef struct {
 /////// functions initialisation /////// 
 
 coord *pos(coord*);
-coord *move(coord*, char, int);
+coord *move(coord*, char, int, int);
 char* keep_score(char*, int);
 
 ////////////////////////////////////////
@@ -95,12 +95,15 @@ int main(){
 		char *score = (char*)malloc(20*sizeof(char)); 
 		int count=0;
 
-		// initial position of @
+		// initial position of head 
 		present_c -> x=20;
 		present_c -> y=5;
 
 		// variable to hold intermediate direction
 		char input_dir='d';
+
+		// variable to count the instances between key press
+		int interval_cnt=0;
 
 		// closing write end of pipe
 		close(pipefd[1]); 
@@ -113,7 +116,7 @@ int main(){
 			buf_status = read(pipefd[0], buffer, sizeof(buffer)); 
 
 			if(buf_status == -1) {
-				// if buffer is empty then movement of @ occurs
+				// if buffer is empty then movement of head occurs
 				if(errno == EAGAIN) {
 
 					printf("\033[%d;%dH", present_c->rand_y, present_c->rand_x);
@@ -134,7 +137,9 @@ int main(){
 					printf("%s%d", score, count*10);
 					fflush(stdout);
 
-					present_c = move(present_c, input_dir, count);
+					present_c = move(present_c, input_dir, count, interval_cnt);
+
+					interval_cnt++;
 
 					usleep(130000);
 					printf("\033[2J");
@@ -144,9 +149,11 @@ int main(){
 					exit(EXIT_FAILURE);
 				}
 			}
-
+			
+			// when key is pressed 
 			else {
 				input_dir = buffer[0];
+				interval_cnt = 0;
 				if(input_dir == 'q'){
 					break; // ends the infinite loop
 				}
@@ -160,7 +167,7 @@ int main(){
 	return 0;
 }
 
-coord *move(coord *ip_coord, char input_dir, int len_tail){
+coord *move(coord *ip_coord, char input_dir, int len_tail, int interval_cnt){
 	coord *data = ip_coord;
 	int i;
 	
@@ -177,6 +184,8 @@ coord *move(coord *ip_coord, char input_dir, int len_tail){
 	char h_left[] = "<";
 
 	char t_dir[9], h_dir[9];
+	/* int upper_bound = (interval_cnt==0)? len_tail : interval_cnt; */
+	int upper_bound = interval_cnt;
 	int x= data -> x;
 	int y= data -> y;
 
@@ -207,7 +216,7 @@ coord *move(coord *ip_coord, char input_dir, int len_tail){
 			default: break;
 		}
 
-		for(i=0; i<len_tail; i++){
+		for(i=0; i<upper_bound; i++){
 			if(i==0){
 				strcpy(data[i].bone, h_dir);
 			}
