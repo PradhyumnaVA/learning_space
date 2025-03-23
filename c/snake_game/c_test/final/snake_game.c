@@ -1,25 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <string.h>
-
-// using struct to hold the variables for coordinates of head and []
-typedef struct {
-	int x,y;
-	int rand_x, rand_y;
-	char bone[9];
-}coord;
-
-/////// functions initialisation /////// 
-
-coord *pos(coord*);
-coord *move(coord*, char, int, int);
-char* keep_score(char*, int);
-
-////////////////////////////////////////
+#include "s_header.h"
 
 int main(){
 	// pipefd holds the read and write fd(file descriptor)
@@ -53,7 +32,7 @@ int main(){
 		char dir; 
 
 		char *write_byte; 
-		
+
 		// closing read end of pipe
 		close(pipefd[0]); 
 
@@ -111,6 +90,9 @@ int main(){
 		// initial position of []
 		present_c=pos(present_c);
 
+		// time increment variable
+		int time_incr=130000;
+
 		while(1){
 			// reading from the buffer, read internally clears the buffer
 			buf_status = read(pipefd[0], buffer, sizeof(buffer)); 
@@ -128,6 +110,7 @@ int main(){
 						(present_c->x)++;
 						(present_c->y)++;
 						count++;
+						time_incr=time_incr-6000;
 						score = keep_score(score,count);			
 						present_c = pos(present_c);
 						continue;
@@ -141,7 +124,7 @@ int main(){
 
 					interval_cnt++;
 
-					usleep(130000);
+					usleep(time_incr);
 					printf("\033[2J");
 				}
 				else {
@@ -162,123 +145,8 @@ int main(){
 		system("stty cooked echo");
 		free(present_c);	
 		free(score);
+		printf("incr=%d",time_incr);
 		exit(EXIT_SUCCESS);
 	}
-	return 0;
-}
-
-coord *move(coord *ip_coord, char input_dir, int len_tail, int interval_cnt){
-	coord *data = ip_coord;
-	int i;
-	
-	// tail configurations
-	char t_down[] = "o\033[A\033[D";
-	char t_right[] = "o\033[2D"; 
-	char t_up[] = "o\033[B\033[D";
-	char t_left[] = "o"; 
-
-	// head configurations
-	char h_down[] = "v\033[A\033[D"; 
-	char h_right[] = ">\033[2D"; 
-	char h_up[] = "^\033[B\033[D"; 
-	char h_left[] = "<";
-
-	char t_dir[9], h_dir[9];
-	/* int upper_bound = (interval_cnt==0)? len_tail : interval_cnt; */
-	int upper_bound = interval_cnt;
-	int x= data -> x;
-	int y= data -> y;
-
-	switch(input_dir){
-		case 'w': y--; break;
-		case 's': y++; break;
-		case 'a': x--; break;
-		case 'd': x++; break;
-		default : break;
-	}
-
-	printf("\033[%d;%dH",y,x);
-
-	if(len_tail != 0){
-		switch(input_dir){
-			case 's': strcpy(t_dir,t_down); 
-				  strcpy(h_dir,h_down);
-				  break;
-			case 'w': strcpy(t_dir,t_up); 
-				  strcpy(h_dir,h_up);
-				  break;
-			case 'd': strcpy(t_dir,t_right); 
-				  strcpy(h_dir,h_right);
-				  break;
-			case 'a': strcpy(t_dir,t_left); 
-				  strcpy(h_dir,h_left);
-				  break;
-			default: break;
-		}
-
-		for(i=0; i<upper_bound; i++){
-			if(i==0){
-				strcpy(data[i].bone, h_dir);
-			}
-			else{
-				strcpy(data[i].bone, t_dir);
-			}
-		}
-
-		for (i = 0; i < len_tail; i++) {
-		    printf("%s", data[i].bone);
-		}
-		fflush(stdout);
-	}
-
-	else{
-		switch(input_dir){
-			case 'w': printf("^"); break;
-			case 's': printf("v"); break;
-			case 'a': printf("<"); break;
-			case 'd': printf(">"); break;
-			default : break;
-		}
-	}
-
-	printf("\033[2;1Hx=%d,y=%d",x,y);
-	printf("\033[3:1Hposx=%d,posy=%d", data -> rand_x, data -> rand_y);
-	fflush(stdout);
-	
-	data -> x = x;
-	data -> y = y;
-
-	return data;
-}
-
-coord *pos(coord *input_coord){
-	// initailise a new struct and give it the value of the struct sent in as argument
-	coord *data = input_coord;
-
-	// update the value of the rand coordinates in the new struct
-	data -> rand_y= rand() % (20-1 +1) + 4;
-	data -> rand_x= rand() % (90-1 +1) + 10;
-
-	// clear the screen
-	printf("\033[2J");
-	
-	// print [] at the rand coordinates
-	printf("\033[%d;%dH", data->rand_y, data->rand_x);
-	printf("[ ]");
-	fflush(stdout);
-
-	// return the data struct, which contains the new rand coordinates, to the main function	
-	return data;
-}
-
-char* keep_score(char *input, int i){
-	char *foo = (char*)malloc(20*sizeof(char)); 
-	foo = input;
-
-	strcat(foo, "#");
-	printf("\033[1;1H");
-	printf("%s%d", foo, i*10);
-	fflush(stdout);
-
-	return foo;
+	return EXIT_SUCCESS;
 }

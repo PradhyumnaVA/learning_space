@@ -49,6 +49,7 @@ int main() {
 	}
 
 	printf("\033[4;1H%s",str);
+	printf("\033[10;10Hhello");
 	return 0;
 }
 

@@ -1,0 +1,5 @@
+take the position where the head changed direction and start the count,
+let the for loop for bone assignment only run till count, this way only
+the bones which are after the point of turning will change and not all
+the bones behind the head
+

@@ -47,8 +47,8 @@ int main(){
 		strcat(str,row);
 		strcat(str,"\n");
 	}
-					/* printf("\033[4;1H%s",str); */
-					/* sleep(5); */
+					printf("\033[4;1H%s",str);
+					sleep(5);
 
 	// creating pipe
 	if(pipe(pipefd) == -1){
@@ -138,7 +138,7 @@ int main(){
 				// if buffer is empty then movement of snake head occurs
 				if(errno == EAGAIN) {
 					printf("\033[4;50H%s",mark);
-					/* printf("\033[4;1H%s",str); */
+					printf("\033[4;1H%s",str);
 
 					printf("\033[%d;%dH", present_c->rand_y, present_c->rand_x);
 					printf("[ ]");
@@ -258,9 +258,9 @@ char **create_matrix(int width, int height, int indent){
 
 	for(i=0; i< height; i++){
 		matrix[i] = (char *)malloc((width+indent+1) * sizeof(char));
-		for (int j = 0; j < width + indent; j++) {
-			matrix[i][j] = ' ';
-		}
+		/* for (int j = 0; j < width + indent; j++) { */
+		/* 	matrix[i][j] = ' '; */
+		/* } */
 		matrix[i][width + indent] = '\0'; // Null terminate each row
 	}
 

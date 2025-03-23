@@ -5,7 +5,7 @@ OUTPUT := snake_game
 all : main run
 
 main : 	
-	gcc -o ${OUTPUT}.o ${FILE}  
+	gcc -Wall -Wextra -std=c2x -pedantic -o ${OUTPUT}.o ${FILE}  
 
 run : 
 	./${OUTPUT}.o

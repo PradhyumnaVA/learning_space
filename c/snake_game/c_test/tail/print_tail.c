@@ -5,15 +5,18 @@
 #include <string.h>
 
 int main(){
-//	char *foo = (char*)malloc(20*sizeof(char)); 
-	char foo[5];
+	/* char *foo = (char*)malloc(20*sizeof(char)); */ 
+	char foo[100];
 	char *ptr = foo;
 	int i;
 
+	/* char s[]="#\033[B\033[D"; */
+	/* printf("size=%f",(float)sizeof(s)); */
+	/* sleep(2); */
 	system("clear");
 
 	for(i=0;i<4;i++){
-		strcat(foo, "#\033[B\033[1D");
+		strcat(foo, "#\033[B\033[D");
 		//printf("\033[%d;10H",i);
 		//printf("%c%d", *(ptr++), i*10);
 		//fflush(stdout);
